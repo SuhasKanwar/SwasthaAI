@@ -1,14 +1,23 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import type React from "react";
-// import { Navbar } from "@/components/Navbar"
-// import { Footer } from "@/components/Footer"
+import { Toaster } from "@/components/ui/sonner";
+import Navbar from "@/components/Navbar"
+import Footer from "@/components/Footer"
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "SwasthaAI",
-  keywords: ["AI", "Finance", "Budgeting", "Insights", "Personal Finance"],
+  keywords: [
+    "AI",
+    "Health",
+    "Healthcare",
+    "Symptom Checker",
+    "Risk Prediction",
+    "Clinical Notes",
+    "Doctor Booking",
+  ],
   authors: [
     { name: "NullPointers", url: "https://github.com/SuhasKanwar/SwasthaAI" },
     { name: "Suhas Kanwar", url: "https://github.com/SuhasKanwar" },
@@ -25,11 +34,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} overflow-x-hidden`}>
-        {/* <Navbar /> */}
-        {children}
-        {/* <Footer /> */}
+      <body className={`${inter.className}`}>
+        <Navbar />
+        <main className="overflow-x-hidden min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50">
+          {children}
+        </main>
+        <Footer />
       </body>
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        expand={false}
+        visibleToasts={4}
+      />
     </html>
   );
 }
