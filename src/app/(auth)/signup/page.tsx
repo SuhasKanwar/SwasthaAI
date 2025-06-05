@@ -136,7 +136,7 @@ export default function SignUpPage() {
       <AnimatedBackground />
 
       <Link href="/" className="absolute top-6 left-6 z-20">
-        <Button variant="ghost" size="sm" className="text-slate-600 hover:text-blue-600">
+        <Button variant="ghost" size="sm" className="text-slate-600 hover:text-blue-600 cursor-pointer">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
         </Button>

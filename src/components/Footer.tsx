@@ -1,8 +1,17 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { Heart } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 const Footer = () => {
+  const pathname = usePathname();
+
+  if(pathname === "/login" || pathname === "/signup") {
+    return null;
+  }
+
   return (
     <footer className="relative z-10 bg-slate-900 text-white py-12">
       <div className="container mx-auto px-6">
