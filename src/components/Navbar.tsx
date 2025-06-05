@@ -19,14 +19,14 @@ const Navbar = () => {
       style={{ marginTop: "1rem" }}
     >
       <div className="flex items-center justify-between p-6 lg:px-8">
-        <div className="flex items-center space-x-2">
+        <a className="flex items-center space-x-2 cursor-pointer" href="/">
           <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-teal-500 rounded-xl flex items-center justify-center shadow-md">
             <Heart className="w-6 h-6 text-white" />
           </div>
           <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
             SwasthaAI
           </span>
-        </div>
+        </a>
         <div className="hidden md:flex items-center space-x-8">
           <Link
             href="#features"

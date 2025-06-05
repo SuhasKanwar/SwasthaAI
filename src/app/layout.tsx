@@ -34,9 +34,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className}`}>
+      <body className={`${inter.className} bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50`}>
         <Navbar />
-        <main className="overflow-x-hidden min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50">
+        <main className="overflow-x-hidden min-h-screen">
           {children}
         </main>
         <Footer />
