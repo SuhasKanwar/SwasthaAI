@@ -32,7 +32,7 @@ const Navbar = () => {
   return (
     <ResizableNavbar className="top-6">
       <NavBody>
-        <a className="flex items-center space-x-2 cursor-pointer" href="/">
+        <a className="flex items-center space-x-2 cursor-pointer z-50" href="/">
           <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-teal-500 rounded-xl flex items-center justify-center shadow-md">
             <Heart className="w-6 h-6 text-white" />
           </div>
@@ -41,7 +41,7 @@ const Navbar = () => {
           </span>
         </a>
         <NavItems items={NAV_ITEMS} />
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 z-50">
           <Link href="/login">
             <Button
               variant="ghost"
@@ -87,18 +87,22 @@ const Navbar = () => {
             </a>
           ))}
           <div className="flex flex-col gap-2 mt-4 w-full">
-            <Link href="/login">
-              <Button
-                variant="ghost"
-                className="w-full text-slate-600 hover:text-blue-600 cursor-pointer"
-              >
-                Login
-              </Button>
+            <Link href="/login" passHref legacyBehavior>
+              <div>
+                <Button
+                  variant="ghost"
+                  className="w-full text-slate-600 hover:text-blue-600 cursor-pointer"
+                >
+                  Login
+                </Button>
+              </div>
             </Link>
-            <Link href="/signup">
-              <Button className="w-full bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white px-6 cursor-pointer">
-                Sign Up
-              </Button>
+            <Link href="/signup" passHref legacyBehavior>
+              <div>
+                <Button className="w-full bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white px-6 cursor-pointer">
+                  Sign Up
+                </Button>
+              </div>
             </Link>
           </div>
         </MobileNavMenu>
