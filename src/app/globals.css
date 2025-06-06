@@ -7,7 +7,7 @@ html {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #000000 #ffffff !important;
+  scrollbar-color: #0f172b #ffffff !important;
 }
 
 @theme inline {
