@@ -13,7 +13,7 @@ const Footer = () => {
   }
 
   return (
-    <footer className="relative z-10 bg-slate-900 text-white py-12">
+    <footer className="relative z-10 bg-slate-900 text-white py-12 mt-20">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
