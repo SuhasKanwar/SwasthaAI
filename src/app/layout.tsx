@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import type React from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/hooks/AuthProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,19 +32,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 overflow-x-hidden`}>
-        <main className="min-h-screen">
-          {children}
-        </main>
-      </body>
-      <Toaster
-        position="top-right"
-        richColors
-        closeButton
-        expand={false}
-        visibleToasts={4}
-      />
-    </html>
+    <AuthProvider>
+      <html lang="en">
+        <body className={`${inter.className} bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 overflow-x-hidden`}>
+          <main className="min-h-screen">
+            {children}
+          </main>
+        </body>
+        <Toaster
+          position="top-right"
+          richColors
+          closeButton
+          expand={false}
+          visibleToasts={4}
+        />
+      </html>
+    </AuthProvider>
   );
 }

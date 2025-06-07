@@ -1,8 +1,8 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
+import axios from "axios"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,75 +12,101 @@ import { Heart, Eye, EyeOff, ArrowLeft, CheckCircle, XCircle, Loader2 } from "lu
 import Link from "next/link"
 import { AnimatedBackground } from "@/components/AnimatedBackground"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
+
+const USER_BACKEND_BASE_URL = process.env.NEXT_PUBLIC_USER_BACKEND_BASE_URL || "http://localhost:8050"
 
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false)
+  const [step, setStep] = useState<"email" | "pin" | "otp" | "done">("email")
   const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [securityPin, setSecurityPin] = useState("")
+  const [otp, setOtp] = useState("")
+  const [token, setToken] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [hasSecurityPin, setHasSecurityPin] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Step 1: Request OTP (login)
+  const handleRequestOtp = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-
-    const loadingToast = toast.loading("Signing in...", {
-      description: "Please wait while we authenticate your account.",
-    })
-
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const res = await axios.post(`${USER_BACKEND_BASE_URL}/api/auth/login`, { email })
+      const data = res.data
+      setHasSecurityPin(data.hasSecurityPin)
+      toast.success("OTP sent to your email")
+      setStep(data.hasSecurityPin ? "pin" : "otp")
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to send OTP")
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
-      const isSuccess = Math.random() > 0.3
-
-      toast.dismiss(loadingToast)
-
-      if (isSuccess) {
-        toast.success("Welcome back!", {
-          description: "You have been successfully signed in to SwasthaAI.",
-          icon: <CheckCircle className="w-4 h-4" />,
-          duration: 4000,
-        })
-        console.log("Login successful:", { email, password })
-      } else {
-        toast.error("Sign in failed", {
-          description: "Invalid email or password. Please try again.",
-          icon: <XCircle className="w-4 h-4" />,
-          action: {
-            label: "Retry",
-            onClick: () => handleSubmit(e),
-          },
-        })
-      }
-    } catch (error) {
-      toast.dismiss(loadingToast)
-      toast.error("Something went wrong", {
-        description: "An unexpected error occurred. Please try again.",
-        icon: <XCircle className="w-4 h-4" />,
+  // Step 2: Verify PIN (if required)
+  const handleVerifyPin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    try {
+      const res = await axios.post(`${USER_BACKEND_BASE_URL}/api/auth/verify-login-pin`, {
+        email,
+        securityPin,
       })
+      toast.success("PIN verified. OTP sent to your email")
+      setStep("otp")
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Invalid PIN")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Step 3: Verify OTP
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    try {
+      const res = await axios.post(`${USER_BACKEND_BASE_URL}/api/auth/verify-login-otp`, {
+        email,
+        otp,
+      })
+      const data = res.data
+      if (data.token) {
+        setToken(data.token)
+        // Store token in sessionStorage for session-based authentication
+        sessionStorage.setItem("access_token", data.token)
+        toast.success("Login successful!")
+        setStep("done")
+        // Redirect to dashboard after a short delay
+        setTimeout(() => {
+          router.push("/dashboard")
+        }, 1000)
+      } else if (data.redirectTo === "setup-pin") {
+        toast.info("Please set up your security PIN.")
+      } else {
+        toast.error(data.message || "Invalid OTP")
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Invalid OTP")
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleGoogleLogin = () => {
-    toast.info("Redirecting to Google", {
-      description: "You will be redirected to Google for authentication.",
-      duration: 3000,
-    })
-    console.log("Google login")
+    window.location.href = `${USER_BACKEND_BASE_URL}/api/auth/google/url`
   }
 
   return (
     <div className="min-h-screen relative flex items-center justify-center p-4">
       <AnimatedBackground />
-
       <Link href="/" className="absolute top-6 left-6 z-20">
         <Button variant="ghost" size="sm" className="text-slate-600 hover:text-blue-600 cursor-pointer">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
         </Button>
       </Link>
-
       <Card className="w-full max-w-md glassmorphism border-0 shadow-2xl relative z-10">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
@@ -95,79 +121,68 @@ export default function LoginPage() {
             <CardDescription className="text-slate-600 mt-2">Sign in to your SwasthaAI account</CardDescription>
           </div>
         </CardHeader>
-
         <CardContent className="space-y-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-700 font-medium">
-                Email Address
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="bg-white/50 border-slate-200 focus:border-blue-400 focus:ring-blue-400"
-                disabled={isLoading}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-slate-700 font-medium">
-                Password
-              </Label>
-              <div className="relative">
+          {step === "email" && (
+            <form onSubmit={handleRequestOtp} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-slate-700 font-medium">
+                  Email Address
+                </Label>
                 <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="bg-white/50 border-slate-200 focus:border-blue-400 focus:ring-blue-400 pr-10"
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="bg-white/50 border-slate-200 focus:border-blue-400 focus:ring-blue-400"
                   disabled={isLoading}
                   required
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4 text-slate-500" />
-                  ) : (
-                    <Eye className="w-4 h-4 text-slate-500" />
-                  )}
-                </Button>
               </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Send OTP"}
+              </Button>
+            </form>
+          )}
+          {step === "pin" && (
+            <form onSubmit={handleVerifyPin} className="space-y-4">
+              <Label htmlFor="securityPin">Enter Security PIN</Label>
+              <Input
+                id="securityPin"
+                type="password"
+                value={securityPin}
+                onChange={(e) => setSecurityPin(e.target.value)}
+                required
+                disabled={isLoading}
+              />
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Verify PIN"}
+              </Button>
+            </form>
+          )}
+          {step === "otp" && (
+            <form onSubmit={handleVerifyOtp} className="space-y-4">
+              <Label htmlFor="otp">Enter OTP</Label>
+              <Input
+                id="otp"
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                required
+                disabled={isLoading}
+              />
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Verify OTP"}
+              </Button>
+            </form>
+          )}
+          {step === "done" && (
+            <div className="text-center">
+              <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
+              <div className="font-bold text-lg">Login Successful!</div>
+              <div className="text-slate-600 mt-2">Welcome to SwasthaAI.</div>
             </div>
-
-            <div className="flex items-center justify-between text-sm">
-              <Link href="/forgot-password" className="text-blue-600 hover:text-blue-700 hover:underline">
-                Forgot password?
-              </Link>
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white py-2.5"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Signing In...
-                </>
-              ) : (
-                "Sign In"
-              )}
-            </Button>
-          </form>
-
+          )}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <Separator className="w-full" />
@@ -176,7 +191,6 @@ export default function LoginPage() {
               <span className="bg-white px-2 text-slate-500">Or continue with</span>
             </div>
           </div>
-
           <Button
             variant="outline"
             className="w-full border-slate-200 hover:bg-slate-50"
@@ -203,7 +217,6 @@ export default function LoginPage() {
             </svg>
             Continue with Google
           </Button>
-
           <div className="text-center text-sm text-slate-600">
             {"Don't have an account? "}
             <Link href="/signup" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">

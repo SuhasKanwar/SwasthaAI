@@ -1,8 +1,8 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
+import axios from "axios"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -17,23 +17,127 @@ import {
   User,
   Stethoscope,
   CheckCircle,
-  XCircle,
-  AlertCircle,
   Loader2,
+  AlertCircle,
 } from "lucide-react"
 import Link from "next/link"
 import { AnimatedBackground } from "@/components/AnimatedBackground"
 import { toast } from "sonner"
 
+const USER_BACKEND_BASE_URL = process.env.NEXT_PUBLIC_USER_BACKEND_BASE_URL || "http://localhost:8050"
+
 export default function SignUpPage() {
+  const [step, setStep] = useState<"email" | "otp" | "pin" | "profile" | "done">("email")
+  const [otp, setOtp] = useState("")
+  const [pin, setPin] = useState("")
+  const [token, setToken] = useState("")
+  const [isNewUser, setIsNewUser] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
+    gender: "",
+    dateOfBirth: "",
     role: "patient",
   })
+
+  // Step 1: Request OTP
+  const handleRequestOtp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    try {
+      const res = await axios.post(`${USER_BACKEND_BASE_URL}/api/auth/request-otp`, {
+        email: formData.email,
+      })
+      const data = res.data
+      setIsNewUser(data.isNewUser)
+      toast.success("OTP sent to your email")
+      setStep("otp")
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to send OTP")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Step 2: Verify OTP
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    try {
+      const res = await axios.post(`${USER_BACKEND_BASE_URL}/api/auth/verify-otp`, {
+        email: formData.email,
+        otp,
+      })
+      const data = res.data
+      if (data.status === "success") {
+        toast.success("OTP verified. Set your PIN.")
+        setStep("pin")
+      } else {
+        toast.error(data.message || "Invalid OTP")
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Invalid OTP")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Step 3: Set PIN
+  const handleSetPin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    try {
+      const res = await axios.post(`${USER_BACKEND_BASE_URL}/api/auth/setup-pin`, {
+        email: formData.email,
+        securityPin: pin,
+        confirmPin: pin,
+        isNewUser,
+      })
+      const data = res.data
+      setToken(data.token)
+      toast.success("PIN set. Complete your profile.")
+      setStep("profile")
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to set PIN")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Step 4: Complete Profile
+  const handleProfileSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!validateForm()) return
+    setIsLoading(true)
+    try {
+      // Only send required fields for basic info
+      await axios.put(
+        `${USER_BACKEND_BASE_URL}/api/physical-health/user/profile/basic-info`,
+        {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          dateOfBirth: formData.dateOfBirth,
+          gender: formData.gender,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      toast.success("Account created successfully!")
+      setStep("done")
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to complete profile")
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const validateForm = () => {
     if (formData.password.length < 8) {
@@ -43,7 +147,6 @@ export default function SignUpPage() {
       })
       return false
     }
-
     if (!formData.email.includes("@")) {
       toast.error("Invalid email", {
         description: "Please enter a valid email address.",
@@ -51,72 +154,35 @@ export default function SignUpPage() {
       })
       return false
     }
-
-    if (formData.name.trim().length < 2) {
-      toast.error("Name too short", {
-        description: "Please enter your full name (at least 2 characters).",
+    if (formData.firstName.trim().length < 1) {
+      toast.error("First name required", {
+        description: "Please enter your first name.",
         icon: <AlertCircle className="w-4 h-4" />,
       })
       return false
     }
-
-    return true
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!validateForm()) {
-      return
-    }
-
-    setIsLoading(true);
-
-    const loadingToast = toast.loading("Creating your account...", {
-      description: "Please wait while we set up your SwasthaAI account.",
-    })
-
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      const isSuccess = Math.random() > 0.2
-
-      toast.dismiss(loadingToast)
-
-      if (isSuccess) {
-        toast.success("Account created successfully!", {
-          description: `Welcome to SwasthaAI, ${formData.name}! Please check your email to verify your account.`,
-          icon: <CheckCircle className="w-4 h-4" />,
-          duration: 6000,
-          action: {
-            label: "Resend Email",
-            onClick: () => {
-              toast.info("Verification email sent", {
-                description: "Please check your inbox and spam folder.",
-              })
-            },
-          },
-        })
-        console.log("Signup successful:", formData)
-      } else {
-        toast.error("Account creation failed", {
-          description: "An error occurred while creating your account. Please try again.",
-          icon: <XCircle className="w-4 h-4" />,
-          action: {
-            label: "Retry",
-            onClick: () => handleSubmit(e),
-          },
-        })
-      }
-    } catch (error) {
-      toast.dismiss(loadingToast)
-      toast.error("Something went wrong", {
-        description: "An unexpected error occurred. Please try again.",
-        icon: <XCircle className="w-4 h-4" />,
+    if (formData.lastName.trim().length < 1) {
+      toast.error("Last name required", {
+        description: "Please enter your last name.",
+        icon: <AlertCircle className="w-4 h-4" />,
       })
-    } finally {
-      setIsLoading(false)
+      return false
     }
+    if (!formData.gender) {
+      toast.error("Gender required", {
+        description: "Please select your gender.",
+        icon: <AlertCircle className="w-4 h-4" />,
+      })
+      return false
+    }
+    if (!formData.dateOfBirth) {
+      toast.error("Date of birth required", {
+        description: "Please enter your date of birth.",
+        icon: <AlertCircle className="w-4 h-4" />,
+      })
+      return false
+    }
+    return true
   }
 
   const handleInputChange = (field: string, value: string) => {
@@ -124,11 +190,7 @@ export default function SignUpPage() {
   }
 
   const handleGoogleSignup = () => {
-    toast.info("Redirecting to Google", {
-      description: "You will be redirected to Google to create your account.",
-      duration: 3000,
-    })
-    console.log("Google signup")
+    window.location.href = `${USER_BACKEND_BASE_URL}/api/auth/google/url`
   }
 
   return (
@@ -158,111 +220,183 @@ export default function SignUpPage() {
         </CardHeader>
 
         <CardContent className="space-y-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-slate-700 font-medium">
-                Full Name
-              </Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Enter your full name"
-                value={formData.name}
-                onChange={(e) => handleInputChange("name", e.target.value)}
-                className="bg-white/50 border-slate-200 focus:border-blue-400 focus:ring-blue-400"
-                disabled={isLoading}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-700 font-medium">
-                Email Address
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-                className="bg-white/50 border-slate-200 focus:border-blue-400 focus:ring-blue-400"
-                disabled={isLoading}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-slate-700 font-medium">
-                Password
-              </Label>
-              <div className="relative">
+          {step === "email" && (
+            <form onSubmit={handleRequestOtp} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-slate-700 font-medium">
+                  Email Address
+                </Label>
                 <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Create a strong password"
-                  value={formData.password}
-                  onChange={(e) => handleInputChange("password", e.target.value)}
-                  className="bg-white/50 border-slate-200 focus:border-blue-400 focus:ring-blue-400 pr-10"
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  className="bg-white/50 border-slate-200 focus:border-blue-400 focus:ring-blue-400"
                   disabled={isLoading}
                   required
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Send OTP"}
+              </Button>
+            </form>
+          )}
+          {step === "otp" && (
+            <form onSubmit={handleVerifyOtp} className="space-y-4">
+              <Label htmlFor="otp">Enter OTP</Label>
+              <Input id="otp" type="text" value={otp} onChange={(e) => setOtp(e.target.value)} required disabled={isLoading} />
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Verify OTP"}
+              </Button>
+            </form>
+          )}
+          {step === "pin" && (
+            <form onSubmit={handleSetPin} className="space-y-4">
+              <Label htmlFor="pin">Set Security PIN</Label>
+              <Input id="pin" type="password" value={pin} onChange={(e) => setPin(e.target.value)} required disabled={isLoading} />
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Set PIN"}
+              </Button>
+            </form>
+          )}
+          {step === "profile" && (
+            <form onSubmit={handleProfileSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName" className="text-slate-700 font-medium">
+                  First Name
+                </Label>
+                <Input
+                  id="firstName"
+                  type="text"
+                  placeholder="Enter your first name"
+                  value={formData.firstName}
+                  onChange={(e) => handleInputChange("firstName", e.target.value)}
+                  className="bg-white/50 border-slate-200 focus:border-blue-400 focus:ring-blue-400"
+                  disabled={isLoading}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName" className="text-slate-700 font-medium">
+                  Last Name
+                </Label>
+                <Input
+                  id="lastName"
+                  type="text"
+                  placeholder="Enter your last name"
+                  value={formData.lastName}
+                  onChange={(e) => handleInputChange("lastName", e.target.value)}
+                  className="bg-white/50 border-slate-200 focus:border-blue-400 focus:ring-blue-400"
+                  disabled={isLoading}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="dateOfBirth" className="text-slate-700 font-medium">
+                  Date of Birth
+                </Label>
+                <Input
+                  id="dateOfBirth"
+                  type="date"
+                  value={formData.dateOfBirth}
+                  onChange={(e) => handleInputChange("dateOfBirth", e.target.value)}
+                  className="bg-white/50 border-slate-200 focus:border-blue-400 focus:ring-blue-400"
+                  disabled={isLoading}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gender" className="text-slate-700 font-medium">
+                  Gender
+                </Label>
+                <select
+                  id="gender"
+                  value={formData.gender}
+                  onChange={(e) => handleInputChange("gender", e.target.value)}
+                  className="w-full bg-white/50 border-slate-200 focus:border-blue-400 focus:ring-blue-400 rounded-md py-2 px-3"
+                  disabled={isLoading}
+                  required
+                >
+                  <option value="">Select gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-slate-700 font-medium">
+                  Password
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create a strong password"
+                    value={formData.password}
+                    onChange={(e) => handleInputChange("password", e.target.value)}
+                    className="bg-white/50 border-slate-200 focus:border-blue-400 focus:ring-blue-400 pr-10"
+                    disabled={isLoading}
+                    required
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                    disabled={isLoading}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4 text-slate-500" />
+                    ) : (
+                      <Eye className="w-4 h-4 text-slate-500" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <Label className="text-slate-700 font-medium">Account Type</Label>
+                <RadioGroup
+                  value={formData.role}
+                  onValueChange={(value) => handleInputChange("role", value)}
+                  className="grid grid-cols-2 gap-4"
                   disabled={isLoading}
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4 text-slate-500" />
-                  ) : (
-                    <Eye className="w-4 h-4 text-slate-500" />
-                  )}
-                </Button>
+                  <div className="flex items-center space-x-2 border rounded-lg p-3 hover:bg-blue-50 transition-colors">
+                    <RadioGroupItem value="patient" id="patient" />
+                    <Label htmlFor="patient" className="flex items-center cursor-pointer flex-1">
+                      <User className="w-4 h-4 mr-2 text-blue-500" />
+                      <span className="text-sm font-medium">Patient</span>
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2 border rounded-lg p-3 hover:bg-teal-50 transition-colors">
+                    <RadioGroupItem value="doctor" id="doctor" />
+                    <Label htmlFor="doctor" className="flex items-center cursor-pointer flex-1">
+                      <Stethoscope className="w-4 h-4 mr-2 text-teal-500" />
+                      <span className="text-sm font-medium">Doctor</span>
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Complete Signup"}
+              </Button>
+            </form>
+          )}
+          {step === "done" && (
+            <div className="text-center">
+              <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
+              <div className="font-bold text-lg">Signup Complete!</div>
+              <div className="text-slate-600 mt-2">
+                You can now{" "}
+                <Link href="/login" className="text-blue-600 underline">
+                  sign in
+                </Link>
+                .
               </div>
             </div>
-
-            <div className="space-y-3">
-              <Label className="text-slate-700 font-medium">Account Type</Label>
-              <RadioGroup
-                value={formData.role}
-                onValueChange={(value) => handleInputChange("role", value)}
-                className="grid grid-cols-2 gap-4"
-                disabled={isLoading}
-              >
-                <div className="flex items-center space-x-2 border rounded-lg p-3 hover:bg-blue-50 transition-colors">
-                  <RadioGroupItem value="patient" id="patient" />
-                  <Label htmlFor="patient" className="flex items-center cursor-pointer flex-1">
-                    <User className="w-4 h-4 mr-2 text-blue-500" />
-                    <span className="text-sm font-medium">Patient</span>
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2 border rounded-lg p-3 hover:bg-teal-50 transition-colors">
-                  <RadioGroupItem value="doctor" id="doctor" />
-                  <Label htmlFor="doctor" className="flex items-center cursor-pointer flex-1">
-                    <Stethoscope className="w-4 h-4 mr-2 text-teal-500" />
-                    <span className="text-sm font-medium">Doctor</span>
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white py-2.5"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Creating Account...
-                </>
-              ) : (
-                "Create Account"
-              )}
-            </Button>
-          </form>
+          )}
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
