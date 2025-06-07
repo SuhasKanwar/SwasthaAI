@@ -2,10 +2,11 @@ import FeaturesSection from "@/components/FeaturesSection";
 import HeroSection from "@/components/HeroSection";
 import TestimonialCards from "@/components/TestimonialCards";
 import MaskingEffect from "@/components/MaskingEffect";
+import WobbleFeatures from "@/components/WobbleFeatures";
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center gap-20">
       <HeroSection />
       <FeaturesSection />
       <section className="w-full flex flex-col items-center justify-center mt-50">
@@ -15,6 +16,7 @@ export default function HomePage() {
         <TestimonialCards />
       </section>
       <MaskingEffect />
+      <WobbleFeatures />
     </div>
   )
 }
