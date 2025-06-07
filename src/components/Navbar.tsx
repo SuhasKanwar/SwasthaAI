@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { usePathname } from "next/navigation";
 import {
   Navbar as ResizableNavbar,
   NavBody,
@@ -22,12 +21,7 @@ const NAV_ITEMS = [
 ];
 
 const Navbar = () => {
-  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  if (pathname === "/login" || pathname === "/signup") {
-    return null;
-  }
 
   return (
     <ResizableNavbar className="top-6">

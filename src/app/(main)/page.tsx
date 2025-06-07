@@ -1,6 +1,7 @@
 import FeaturesSection from "@/components/FeaturesSection";
 import HeroSection from "@/components/HeroSection";
 import TestimonialCards from "@/components/TestimonialCards";
+import MaskingEffect from "@/components/MaskingEffect";
 
 export default function HomePage() {
   return (
@@ -13,6 +14,7 @@ export default function HomePage() {
         </h2>
         <TestimonialCards />
       </section>
+      <MaskingEffect />
     </div>
   )
 }

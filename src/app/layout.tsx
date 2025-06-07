@@ -2,8 +2,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import type React from "react";
 import { Toaster } from "@/components/ui/sonner";
-import Navbar from "@/components/Navbar"
-import Footer from "@/components/Footer"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,11 +33,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 overflow-x-hidden`}>
-        <Navbar />
         <main className="min-h-screen">
           {children}
         </main>
-        <Footer />
       </body>
       <Toaster
         position="top-right"
