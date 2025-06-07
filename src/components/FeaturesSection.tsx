@@ -1,5 +1,3 @@
-"use client";
-
 import { Stethoscope, Brain, Mic, CalendarCheck, UserCheck } from "lucide-react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 

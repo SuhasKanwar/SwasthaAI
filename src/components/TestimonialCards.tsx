@@ -1,4 +1,3 @@
-"use client";
 import { CardStack } from "@/components/ui/card-stack";;
 import { cn } from "@/lib/utils";
 export default function TestimonialCards() {
