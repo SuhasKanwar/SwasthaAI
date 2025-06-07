@@ -14,21 +14,48 @@ import {
   MobileNavToggle,
 } from "@/components/ui/resizable-navbar";
 import { useAuth } from "@/hooks/AuthProvider";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import axios from "axios";
 
 const NAV_ITEMS = [
-  { name: "Features", link: "#features" },
-  { name: "Benefits", link: "#benefits" },
-  { name: "Testimonials", link: "#testimonials" },
+  { name: "Features", link: "/#features" },
+  { name: "Benefits", link: "/#benefits" },
+  { name: "Testimonials", link: "/#testimonials" },
 ];
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, logout, token } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        `${
+          process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+        }/api/auth/logout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } catch (e) {
+      toast.error("Logout failed. Please try again later.");
+    }
+    logout();
+    router.push("/login");
+  };
 
   return (
     <ResizableNavbar className="top-6">
       <NavBody>
-        <Link className="flex items-center space-x-2 cursor-pointer z-50" href="/">
+        <Link
+          className="flex items-center space-x-2 cursor-pointer z-50"
+          href="/"
+        >
           <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-teal-500 rounded-xl flex items-center justify-center shadow-md">
             <Heart className="w-6 h-6 text-white" />
           </div>
@@ -39,11 +66,22 @@ const Navbar = () => {
         <NavItems items={NAV_ITEMS} />
         <div className="flex items-center space-x-4 z-50">
           {isLoggedIn ? (
-            <Link href="/dashboard">
-              <Button className="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white px-6 cursor-pointer">
-                Dashboard
+            <>
+              <Link href="/dashboard">
+                <Button
+                  variant="ghost"
+                  className="text-slate-600 hover:text-blue-600 cursor-pointer"
+                >
+                  Dashboard
+                </Button>
+              </Link>
+              <Button
+                className="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white px-6 cursor-pointer"
+                onClick={handleLogout}
+              >
+                Logout
               </Button>
-            </Link>
+            </>
           ) : (
             <>
               <Link href="/login">
@@ -78,10 +116,7 @@ const Navbar = () => {
             onClick={() => setMobileOpen((v) => !v)}
           />
         </MobileNavHeader>
-        <MobileNavMenu
-          isOpen={mobileOpen}
-          onClose={() => setMobileOpen(false)}
-        >
+        <MobileNavMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)}>
           {NAV_ITEMS.map((item) => (
             <a
               key={item.name}
@@ -94,13 +129,27 @@ const Navbar = () => {
           ))}
           <div className="flex flex-col gap-2 mt-4 w-full">
             {isLoggedIn ? (
-              <Link href="/dashboard" passHref legacyBehavior>
-                <div>
-                  <Button className="w-full bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white px-6 cursor-pointer">
-                    Dashboard
-                  </Button>
-                </div>
-              </Link>
+              <>
+                <Link href="/dashboard" passHref legacyBehavior>
+                  <div>
+                    <Button
+                      variant="ghost"
+                      className="w-full text-slate-600 hover:text-blue-600 cursor-pointer"
+                    >
+                      Dashboard
+                    </Button>
+                  </div>
+                </Link>
+                <Button
+                  className="w-full bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white px-6 cursor-pointer"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    handleLogout();
+                  }}
+                >
+                  Logout
+                </Button>
+              </>
             ) : (
               <>
                 <Link href="/login" passHref legacyBehavior>

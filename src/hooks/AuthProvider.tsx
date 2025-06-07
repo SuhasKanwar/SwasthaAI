@@ -34,7 +34,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   const logout = () => {
-    setToken(null)
+    sessionStorage.removeItem("access_token");
+    setTokenState(null);
   }
 
   return (

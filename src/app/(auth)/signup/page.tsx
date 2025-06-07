@@ -189,8 +189,18 @@ export default function SignUpPage() {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleGoogleSignup = () => {
-    window.location.href = `${USER_BACKEND_BASE_URL}/api/auth/google/url`
+  const handleGoogleSignup = async () => {
+    try {
+      const res = await axios.get(`${USER_BACKEND_BASE_URL}/api/oauth/google/url`)
+      const url = res.data.url
+      if (url) {
+        window.location.href = url
+      } else {
+        toast.error("Failed to get Google Auth URL")
+      }
+    } catch (error) {
+      toast.error("Failed to get Google Auth URL")
+    }
   }
 
   return (

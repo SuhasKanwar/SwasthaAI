@@ -74,14 +74,10 @@ export default function LoginPage() {
       const data = res.data
       if (data.token) {
         setToken(data.token)
-        // Store token in sessionStorage for session-based authentication
         sessionStorage.setItem("access_token", data.token)
         toast.success("Login successful!")
         setStep("done")
-        // Redirect to dashboard after a short delay
-        setTimeout(() => {
-          router.push("/dashboard")
-        }, 1000)
+        router.push("/dashboard")
       } else if (data.redirectTo === "setup-pin") {
         toast.info("Please set up your security PIN.")
       } else {
@@ -94,8 +90,18 @@ export default function LoginPage() {
     }
   }
 
-  const handleGoogleLogin = () => {
-    window.location.href = `${USER_BACKEND_BASE_URL}/api/auth/google/url`
+  const handleGoogleLogin = async () => {
+    try {
+      const res = await axios.get(`${USER_BACKEND_BASE_URL}/api/oauth/google/url`)
+      const url = res.data.url
+      if (url) {
+        window.location.href = url
+      } else {
+        toast.error("Failed to get Google Auth URL")
+      }
+    } catch (error) {
+      toast.error("Failed to get Google Auth URL")
+    }
   }
 
   return (
