@@ -32,14 +32,14 @@ const Navbar = () => {
   return (
     <ResizableNavbar className="top-6">
       <NavBody>
-        <a className="flex items-center space-x-2 cursor-pointer z-50" href="/">
+        <Link className="flex items-center space-x-2 cursor-pointer z-50" href="/">
           <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-teal-500 rounded-xl flex items-center justify-center shadow-md">
             <Heart className="w-6 h-6 text-white" />
           </div>
           <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
             SwasthaAI
           </span>
-        </a>
+        </Link>
         <NavItems items={NAV_ITEMS} />
         <div className="flex items-center space-x-4 z-50">
           <Link href="/login">
