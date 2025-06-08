@@ -17,6 +17,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import axios from "axios";
+import Logo from "@/components/Logo";
 
 const NAV_ITEMS = [
   { name: "Features", link: "/#features" },
@@ -56,9 +57,7 @@ const Navbar = () => {
           className="flex items-center space-x-2 cursor-pointer z-50"
           href="/"
         >
-          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-teal-500 rounded-xl flex items-center justify-center shadow-md">
-            <Heart className="w-6 h-6 text-white" />
-          </div>
+          <Logo />
           <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
             SwasthaAI
           </span>

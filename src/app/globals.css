@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* @custom-variant dark (&:is(.dark *)); */
+
 html {
   scroll-behavior: smooth;
 }
@@ -114,7 +116,7 @@ html {
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
 }
 
 @layer base {
@@ -157,44 +159,68 @@ html {
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.18);
   }
-  
+
   .mesh-animation {
     background: linear-gradient(-45deg, #e0f2fe, #f0fdfa, #ecfeff, #f8fafc);
     background-size: 400% 400%;
     animation: meshGradient 15s ease infinite;
   }
-  
+
   .float-animation {
     animation: float 6s ease-in-out infinite;
   }
-  
+
   .pulse-glow {
     animation: pulseGlow 2s ease-in-out infinite alternate;
   }
 }
 
 @keyframes meshGradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
 }
 
 @keyframes pulseGlow {
-  0% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-  100% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.6); }
+  0% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+  }
 }
 
 .wave-animation {
-  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(59, 130, 246, 0.1),
+    transparent
+  );
   animation: wave 3s linear infinite;
 }
 
 @keyframes wave {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
