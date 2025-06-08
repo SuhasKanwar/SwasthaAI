@@ -7,12 +7,12 @@ const sidebarLinks = [
     {
         name: "Home",
         icon: <IconHome />,
-        link: "/",
+        link: "/home",
     },
     {
         name: "MedAlerts",
         icon: <AlertCircle />,
-        link: "/dashboard/medalerts",
+        link: "/dashboard/med-alerts",
     },
     {
         name: "Book Appointment",
@@ -26,7 +26,7 @@ const sidebarLinks = [
     },
 ]
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <main>
       <Sidebar items={sidebarLinks} />
