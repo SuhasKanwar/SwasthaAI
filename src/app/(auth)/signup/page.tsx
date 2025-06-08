@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import type React from "react"
 import { useState } from "react"
@@ -24,16 +24,16 @@ import Link from "next/link"
 import { AnimatedBackground } from "@/components/AnimatedBackground"
 import { toast } from "sonner"
 
-const USER_BACKEND_BASE_URL = process.env.NEXT_PUBLIC_USER_BACKEND_BASE_URL || "http://localhost:8050"
+const USER_BACKEND_BASE_URL = process.env.NEXT_PUBLIC_USER_BACKEND_BASE_URL || "http://localhost:8050";
 
 export default function SignUpPage() {
-  const [step, setStep] = useState<"email" | "otp" | "pin" | "profile" | "done">("email")
-  const [otp, setOtp] = useState("")
-  const [pin, setPin] = useState("")
-  const [token, setToken] = useState("")
-  const [isNewUser, setIsNewUser] = useState(true)
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [step, setStep] = useState<"email" | "otp" | "pin" | "profile" | "done">("email");
+  const [otp, setOtp] = useState("");
+  const [pin, setPin] = useState("");
+  const [token, setToken] = useState("");
+  const [isNewUser, setIsNewUser] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -42,79 +42,78 @@ export default function SignUpPage() {
     gender: "",
     dateOfBirth: "",
     role: "patient",
-  })
+  });
 
   // Step 1: Request OTP
   const handleRequestOtp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
     try {
       const res = await axios.post(`${USER_BACKEND_BASE_URL}/api/auth/request-otp`, {
         email: formData.email,
-      })
-      const data = res.data
-      setIsNewUser(data.isNewUser)
-      toast.success("OTP sent to your email")
-      setStep("otp")
+      });
+      const data = res.data;
+      setIsNewUser(data.isNewUser);
+      toast.success("OTP sent to your email");
+      setStep("otp");
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to send OTP")
+      toast.error(error?.response?.data?.message || "Failed to send OTP");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   // Step 2: Verify OTP
   const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
     try {
       const res = await axios.post(`${USER_BACKEND_BASE_URL}/api/auth/verify-otp`, {
         email: formData.email,
         otp,
-      })
-      const data = res.data
+      });
+      const data = res.data;
       if (data.status === "success") {
-        toast.success("OTP verified. Set your PIN.")
-        setStep("pin")
+        toast.success("OTP verified. Set your PIN.");
+        setStep("pin");
       } else {
-        toast.error(data.message || "Invalid OTP")
+        toast.error(data.message || "Invalid OTP");
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Invalid OTP")
+      toast.error(error?.response?.data?.message || "Invalid OTP");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   // Step 3: Set PIN
   const handleSetPin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
     try {
       const res = await axios.post(`${USER_BACKEND_BASE_URL}/api/auth/setup-pin`, {
         email: formData.email,
         securityPin: pin,
         confirmPin: pin,
         isNewUser,
-      })
-      const data = res.data
-      setToken(data.token)
-      toast.success("PIN set. Complete your profile.")
-      setStep("profile")
+      });
+      const data = res.data;
+      setToken(data.token);
+      toast.success("PIN set. Complete your profile.");
+      setStep("profile");
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to set PIN")
+      toast.error(error?.response?.data?.message || "Failed to set PIN");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   // Step 4: Complete Profile
   const handleProfileSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!validateForm()) return
-    setIsLoading(true)
+    e.preventDefault();
+    if (!validateForm()) return;
+    setIsLoading(true);
     try {
-      // Only send required fields for basic info
       await axios.put(
         `${USER_BACKEND_BASE_URL}/api/physical-health/user/profile/basic-info`,
         {
@@ -129,13 +128,13 @@ export default function SignUpPage() {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
-      toast.success("Account created successfully!")
-      setStep("done")
+      );
+      toast.success("Account created successfully!");
+      setStep("done");
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to complete profile")
+      toast.error(error?.response?.data?.message || "Failed to complete profile");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 

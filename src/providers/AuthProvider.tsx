@@ -17,20 +17,20 @@ const AuthContext = createContext<AuthContextType>({
 })
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [token, setTokenState] = useState<string | null>(null)
+  const [token, setTokenState] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedToken = sessionStorage.getItem("access_token")
-    if (storedToken) setTokenState(storedToken)
-  }, [])
+    const storedToken = sessionStorage.getItem("access_token");
+    if (storedToken) setTokenState(storedToken);
+  }, []);
 
   const setToken = (token: string | null) => {
     if (token) {
-      sessionStorage.setItem("access_token", token)
+      sessionStorage.setItem("access_token", token);
     } else {
-      sessionStorage.removeItem("access_token")
+      sessionStorage.removeItem("access_token");
     }
-    setTokenState(token)
+    setTokenState(token);
   }
 
   const logout = () => {

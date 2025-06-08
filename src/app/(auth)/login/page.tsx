@@ -28,48 +28,48 @@ export default function LoginPage() {
 
   // Step 1: Request OTP (login)
   const handleRequestOtp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
     try {
-      const res = await axios.post(`${USER_BACKEND_BASE_URL}/api/auth/login`, { email })
-      const data = res.data
-      toast.success("OTP sent to your email")
-      setStep(data.hasSecurityPin ? "pin" : "otp")
+      const res = await axios.post(`${USER_BACKEND_BASE_URL}/api/auth/login`, { email });
+      const data = res.data;
+      toast.success("OTP sent to your email");
+      setStep(data.hasSecurityPin ? "pin" : "otp");
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to send OTP")
+      toast.error(error?.response?.data?.message || "Failed to send OTP");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   // Step 2: Verify PIN (if required)
   const handleVerifyPin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
     try {
       await axios.post(`${USER_BACKEND_BASE_URL}/api/auth/verify-login-pin`, {
         email,
         securityPin,
       })
-      toast.success("PIN verified. OTP sent to your email")
-      setStep("otp")
+      toast.success("PIN verified. OTP sent to your email");
+      setStep("otp");
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Invalid PIN")
+      toast.error(error?.response?.data?.message || "Invalid PIN");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   // Step 3: Verify OTP
   const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
     try {
       const res = await axios.post(`${USER_BACKEND_BASE_URL}/api/auth/verify-login-otp`, {
         email,
         otp,
       })
-      const data = res.data
+      const data = res.data;
       if (data.token) {
         setToken(data.token);
         toast.success("Login successful!");
@@ -83,21 +83,21 @@ export default function LoginPage() {
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Invalid OTP");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   const handleGoogleLogin = async () => {
     try {
-      const res = await axios.get(`${USER_BACKEND_BASE_URL}/api/oauth/google/url`)
-      const url = res.data.url
+      const res = await axios.get(`${USER_BACKEND_BASE_URL}/api/oauth/google/url`);
+      const url = res.data.url;
       if (url) {
-        window.location.href = url
+        window.location.href = url;
       } else {
-        toast.error("Failed to get Google Auth URL")
+        toast.error("Failed to get Google Auth URL");
       }
     } catch (error) {
-      toast.error("Failed to get Google Auth URL")
+      toast.error("Failed to get Google Auth URL");
     }
   }
 
