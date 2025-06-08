@@ -7,22 +7,22 @@ const sidebarLinks = [
     {
         name: "Home",
         icon: <IconHome />,
-        link: "/home",
+        link: "/d/home",
     },
     {
         name: "MedAlerts",
         icon: <AlertCircle />,
-        link: "/dashboard/med-alerts",
+        link: "/d/dashboard/med-alerts",
     },
     {
         name: "Book Appointment",
         icon: <MdAddCircle />,
-        link: "/dashboard/book-appointment",
+        link: "/d/dashboard/book-appointment",
     },
     {
         name: "Help",
         icon: <HelpCircle />,
-        link: "/dashboard/help",
+        link: "/d/dashboard/help",
     },
 ]
 

@@ -74,7 +74,7 @@ export default function LoginPage() {
         setToken(data.token);
         toast.success("Login successful!");
         setStep("done");
-        router.push("/dashboard");
+        router.push("/u/dashboard");
       } else if (data.redirectTo === "setup-pin") {
         toast.info("Please set up your security PIN.");
       } else {
