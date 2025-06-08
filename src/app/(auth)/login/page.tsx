@@ -21,10 +21,8 @@ export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [securityPin, setSecurityPin] = useState("")
   const [otp, setOtp] = useState("")
-  const [token, setToken] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [hasSecurityPin, setHasSecurityPin] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
+  const [hasSecurityPin, setHasSecurityPin] = useState(false);
   const router = useRouter()
 
   // Step 1: Request OTP (login)
@@ -73,8 +71,6 @@ export default function LoginPage() {
       })
       const data = res.data
       if (data.token) {
-        setToken(data.token)
-        sessionStorage.setItem("access_token", data.token)
         toast.success("Login successful!")
         setStep("done")
         router.push("/dashboard")
