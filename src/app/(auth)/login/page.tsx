@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import type React from "react"
 import { useState } from "react"
@@ -8,22 +8,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { Heart, Eye, EyeOff, ArrowLeft, CheckCircle, XCircle, Loader2 } from "lucide-react"
+import { Heart, ArrowLeft, CheckCircle, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { AnimatedBackground } from "@/components/AnimatedBackground"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/providers/AuthProvider";
 
 const USER_BACKEND_BASE_URL = process.env.NEXT_PUBLIC_USER_BACKEND_BASE_URL || "http://localhost:8050"
 
 export default function LoginPage() {
-  const [step, setStep] = useState<"email" | "pin" | "otp" | "done">("email")
-  const [email, setEmail] = useState("")
-  const [securityPin, setSecurityPin] = useState("")
-  const [otp, setOtp] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [hasSecurityPin, setHasSecurityPin] = useState(false);
-  const router = useRouter()
+  const [step, setStep] = useState<"email" | "pin" | "otp" | "done">("email");
+  const [email, setEmail] = useState("");
+  const [securityPin, setSecurityPin] = useState("");
+  const [otp, setOtp] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const { setToken } = useAuth();
 
   // Step 1: Request OTP (login)
   const handleRequestOtp = async (e: React.FormEvent) => {
@@ -32,7 +33,6 @@ export default function LoginPage() {
     try {
       const res = await axios.post(`${USER_BACKEND_BASE_URL}/api/auth/login`, { email })
       const data = res.data
-      setHasSecurityPin(data.hasSecurityPin)
       toast.success("OTP sent to your email")
       setStep(data.hasSecurityPin ? "pin" : "otp")
     } catch (error: any) {
@@ -47,7 +47,7 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
     try {
-      const res = await axios.post(`${USER_BACKEND_BASE_URL}/api/auth/verify-login-pin`, {
+      await axios.post(`${USER_BACKEND_BASE_URL}/api/auth/verify-login-pin`, {
         email,
         securityPin,
       })
@@ -71,16 +71,17 @@ export default function LoginPage() {
       })
       const data = res.data
       if (data.token) {
-        toast.success("Login successful!")
-        setStep("done")
-        router.push("/dashboard")
+        setToken(data.token);
+        toast.success("Login successful!");
+        setStep("done");
+        router.push("/dashboard");
       } else if (data.redirectTo === "setup-pin") {
-        toast.info("Please set up your security PIN.")
+        toast.info("Please set up your security PIN.");
       } else {
-        toast.error(data.message || "Invalid OTP")
+        toast.error(data.message || "Invalid OTP");
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Invalid OTP")
+      toast.error(error?.response?.data?.message || "Invalid OTP");
     } finally {
       setIsLoading(false)
     }

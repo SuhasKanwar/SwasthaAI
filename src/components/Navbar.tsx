@@ -13,7 +13,7 @@ import {
   MobileNavMenu,
   MobileNavToggle,
 } from "@/components/ui/resizable-navbar";
-import { useAuth } from "@/hooks/AuthProvider";
+import { useAuth } from "@/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import axios from "axios";
@@ -33,7 +33,7 @@ const Navbar = () => {
     try {
       await axios.post(
         `${
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+          process.env.NEXT_PUBLIC_USER_BACKEND_BASE_URL || "http://localhost:8050"
         }/api/auth/logout`,
         {},
         {
