@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const userBaseURL = process.env.NEXT_PUBLIC_USER_BACKEND_BASE_URL || 'http://localhost:8050/api';
-const doctorBaseURL = process.env.NEXT_PUBLIC_DOCTOR_BACKEND_BASE_URL || 'http://localhost:9050/api';
+const userBaseURL = process.env.NEXT_PUBLIC_USER_BACKEND_BASE_URL || 'http://localhost:8050';
+const doctorBaseURL = process.env.NEXT_PUBLIC_DOCTOR_BACKEND_BASE_URL || 'http://localhost:9050';
 
 const userApi = axios.create({ baseURL: userBaseURL });
 const doctorApi = axios.create({ baseURL: doctorBaseURL });
