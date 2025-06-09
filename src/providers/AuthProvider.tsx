@@ -7,6 +7,7 @@ type AuthContextType = {
   setToken: (token: string | null) => void
   isLoggedIn: boolean
   logout: () => void
+  setRole: (role: string) => void
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -14,6 +15,7 @@ const AuthContext = createContext<AuthContextType>({
   setToken: () => {},
   isLoggedIn: false,
   logout: () => {},
+  setRole: () => {}
 })
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -33,13 +35,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTokenState(token);
   }
 
+  const setRole = (role: string) => {
+    if (token) {
+      sessionStorage.setItem("user_role", role);
+    }
+    else {
+      sessionStorage.removeItem("user_role");
+    }
+  }
+
   const logout = () => {
     sessionStorage.removeItem("access_token");
     setTokenState(null);
   }
 
   return (
-    <AuthContext.Provider value={{ token, setToken, isLoggedIn: !!token, logout }}>
+    <AuthContext.Provider value={{ token, setToken, isLoggedIn: !!token, logout, setRole }}>
       {children}
     </AuthContext.Provider>
   )
