@@ -267,7 +267,7 @@ export default function MedAlertsPage() {
 
   return (
     <motion.section
-      className="min-h-screen w-full pl-20 pr-5 pt-15 space-y-10"
+      className="min-h-screen w-full pl-20 pr-5 pt-15 space-y-10 mb-10"
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 40 }}

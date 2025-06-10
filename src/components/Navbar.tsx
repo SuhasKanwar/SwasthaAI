@@ -29,6 +29,7 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isLoggedIn, logout, token } = useAuth();
   const router = useRouter();
+  const { role } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -66,14 +67,14 @@ const Navbar = () => {
         <div className="flex items-center space-x-4 z-50">
           {isLoggedIn ? (
             <>
-              <Link href="/dashboard">
-                <Button
-                  variant="ghost"
-                  className="text-slate-600 hover:text-blue-600 cursor-pointer"
-                >
-                  Dashboard
-                </Button>
-              </Link>
+              <Link href={role === "patient" ? "/u/dashboard" : "/d/dashboard"}>
+                  <Button
+                    variant="outline"
+                    className="w-full text-slate-600 hover:text-blue-600 cursor-pointer"
+                  >
+                    Dashboard
+                  </Button>
+                </Link>
               <Button
                 className="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white px-6 cursor-pointer"
                 onClick={handleLogout}
@@ -129,15 +130,13 @@ const Navbar = () => {
           <div className="flex flex-col gap-2 mt-4 w-full">
             {isLoggedIn ? (
               <>
-                <Link href="/dashboard" passHref legacyBehavior>
-                  <div>
-                    <Button
-                      variant="ghost"
-                      className="w-full text-slate-600 hover:text-blue-600 cursor-pointer"
-                    >
-                      Dashboard
-                    </Button>
-                  </div>
+                <Link href={role === "patient" ? "/u/dashboard" : "/d/dashboard"}>
+                  <Button
+                    variant="outline"
+                    className="w-full text-slate-600 hover:text-blue-600 cursor-pointer"
+                  >
+                    Dashboard
+                  </Button>
                 </Link>
                 <Button
                   className="w-full bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white px-6 cursor-pointer"

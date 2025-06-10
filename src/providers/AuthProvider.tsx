@@ -7,7 +7,8 @@ type AuthContextType = {
   setToken: (token: string | null) => void
   isLoggedIn: boolean
   logout: () => void
-  setRole: (role: string) => void
+  setRole: (role: string | null) => void
+  role: string | null
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -15,15 +16,20 @@ const AuthContext = createContext<AuthContextType>({
   setToken: () => {},
   isLoggedIn: false,
   logout: () => {},
-  setRole: () => {}
+  setRole: () => {},
+  role: null
 })
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [token, setTokenState] = useState<string | null>(null);
+  const [role, setRoleState] = useState<string | null>(null);
 
   useEffect(() => {
     const storedToken = sessionStorage.getItem("access_token");
     if (storedToken) setTokenState(storedToken);
+
+    const storedRole = sessionStorage.getItem("user_role");
+    if (storedRole) setRoleState(storedRole);
   }, []);
 
   const setToken = (token: string | null) => {
@@ -35,22 +41,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTokenState(token);
   }
 
-  const setRole = (role: string) => {
-    if (token) {
+  const setRole = (role: string | null) => {
+    if (role) {
       sessionStorage.setItem("user_role", role);
-    }
-    else {
+    } else {
       sessionStorage.removeItem("user_role");
     }
+    setRoleState(role);
   }
 
   const logout = () => {
     sessionStorage.removeItem("access_token");
+    sessionStorage.removeItem("user_role");
     setTokenState(null);
+    setRoleState(null);
   }
 
   return (
-    <AuthContext.Provider value={{ token, setToken, isLoggedIn: !!token, logout, setRole }}>
+    <AuthContext.Provider value={{ token, setToken, isLoggedIn: !!token, logout, setRole, role }}>
       {children}
     </AuthContext.Provider>
   )
