@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Mic, Send, UploadCloud, User, Bot, X } from "lucide-react";
 import clsx from "clsx";
 import { toast } from "sonner";
+import axios from "axios";
 
 const SUGGESTIONS = [
 	{
@@ -62,10 +63,41 @@ export default function SwasthaAIChatbotPage() {
 		setMessages((prev) => [...prev, userMsg]);
 		setInput("");
 
-		//TODO: Make API call to backend with input and selected file
+		try {
+			let response;
+			if (selectedFile) {
+				const formData = new FormData();
+				formData.append("query", input);
+				formData.append("file", selectedFile);
 
-		setLoading(false);
-		setSelectedFile(null);
+				response = await axios.post(
+					`${process.env.NEXT_PUBLIC_MICROSERVICE_BASE_URL}/chatbot/query-with-file`,
+					formData,
+					{
+						headers: {
+							"Content-Type": "multipart/form-data",
+						},
+					}
+				);
+			} else {
+				response = await axios.post(
+					`${process.env.NEXT_PUBLIC_MICROSERVICE_BASE_URL}/chatbot/query`,
+					{ query: input }
+				);
+			}
+
+			const botMsg = {
+				id: Date.now() + 1,
+				sender: "bot",
+				text: response.data?.answer || "Sorry, I couldn't process your request.",
+			};
+			setMessages((prev) => [...prev, botMsg]);
+		} catch (err: any) {
+			setError("Failed to get a response. Please try again.");
+		} finally {
+			setLoading(false);
+			setSelectedFile(null);
+		}
 	};
 
 	const handleVoice = () => {
@@ -211,7 +243,7 @@ export default function SwasthaAIChatbotPage() {
 						<div className="flex items-center gap-2 my-4">
 							<Loader2 className="w-5 h-5 animate-spin text-blue-400" />
 							<span className="text-slate-400 text-sm">
-								SwasthaAI is typing...
+								SwasthaAI bot in thinking...
 							</span>
 						</div>
 					)}
@@ -268,7 +300,7 @@ export default function SwasthaAIChatbotPage() {
 						disabled={loading}
 					/>
 					<Button
-						variant={voiceActive ? "default" : "ghost"}
+						variant={voiceActive ? "destructive" : "outline"}
 						size="icon"
 						className={clsx(
 							"text-blue-500",
