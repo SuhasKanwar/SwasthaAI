@@ -159,9 +159,7 @@ export default function MedAlertsPage() {
       );
       setCategories((prev) =>
         prev.map((cat) =>
-          cat.id === editingCategory.id
-            ? { ...cat, ...categoryForm }
-            : cat
+          cat.id === editingCategory.id ? { ...cat, ...categoryForm } : cat
         )
       );
       setEditingCategory(null);
@@ -207,7 +205,9 @@ export default function MedAlertsPage() {
         reminderForm
       );
       setReminders((prev) =>
-        prev.map((rem) => (rem.id === editingReminder.id ? res.data.data || res.data : rem))
+        prev.map((rem) =>
+          rem.id === editingReminder.id ? res.data.data || res.data : rem
+        )
       );
       setEditingReminder(null);
       setShowReminderModal(false);
@@ -237,7 +237,9 @@ export default function MedAlertsPage() {
     try {
       if (deleteModal.type === "category") {
         await userApi.delete(`/api/medalert/categories/${deleteModal.id}`);
-        setCategories((prev) => prev.filter((cat) => cat.id !== deleteModal.id));
+        setCategories((prev) =>
+          prev.filter((cat) => cat.id !== deleteModal.id)
+        );
         toast.success("Category deleted");
       } else if (deleteModal.type === "reminder") {
         await userApi.delete(`/api/medalert/reminders/${deleteModal.id}`);
@@ -279,10 +281,11 @@ export default function MedAlertsPage() {
     }
   };
 
-  const filteredReminders = reminders.filter((rem) =>
-    rem.medicineName.toLowerCase().includes(search.toLowerCase()) ||
-    rem.dosage.toLowerCase().includes(search.toLowerCase()) ||
-    rem.category?.name?.toLowerCase().includes(search.toLowerCase())
+  const filteredReminders = reminders.filter(
+    (rem) =>
+      rem.medicineName.toLowerCase().includes(search.toLowerCase()) ||
+      rem.dosage.toLowerCase().includes(search.toLowerCase()) ||
+      rem.category?.name?.toLowerCase().includes(search.toLowerCase())
   );
 
   if (!isLoggedIn) return <BackToLogin />;
@@ -295,7 +298,7 @@ export default function MedAlertsPage() {
 
   return (
     <motion.section
-      className="min-h-screen w-full pl-20 pr-5 pt-12 space-y-10"
+      className="min-h-screen w-full pl-20 pr-5 pt-15 space-y-10"
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 40 }}
@@ -391,7 +394,14 @@ export default function MedAlertsPage() {
                 style={{ fontSize: "1rem" }}
               />
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none">
-                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <svg
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
                   <circle cx="11" cy="11" r="8" />
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
@@ -424,12 +434,16 @@ export default function MedAlertsPage() {
                       isPaused && "opacity-50 grayscale"
                     )}
                     style={{
-                      borderTop: `6px solid ${rem.category?.color || "#3b82f6"}`,
+                      borderTop: `6px solid ${
+                        rem.category?.color || "#3b82f6"
+                      }`,
                       background: isPaused ? "#f3f4f6" : undefined,
                     }}
                   >
                     <div className="flex justify-between items-center mb-2">
-                      <div className="font-bold text-lg">{rem.medicineName}</div>
+                      <div className="font-bold text-lg">
+                        {rem.medicineName}
+                      </div>
                       <div className="flex gap-2">
                         <Button
                           size="icon"
@@ -468,33 +482,41 @@ export default function MedAlertsPage() {
                     <Separator className="my-2" />
                     <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-sm mb-2">
                       <div>
-                        <span className="font-semibold">Category:</span> {rem.category?.name}
+                        <span className="font-semibold">Category:</span>{" "}
+                        {rem.category?.name}
                       </div>
                       <div>
                         <span className="font-semibold">Form:</span> {rem.form}
                       </div>
                       <div>
-                        <span className="font-semibold">Dosage:</span> {rem.dosage}
+                        <span className="font-semibold">Dosage:</span>{" "}
+                        {rem.dosage}
                       </div>
                       <div>
-                        <span className="font-semibold">Frequency:</span> {rem.frequency}
+                        <span className="font-semibold">Frequency:</span>{" "}
+                        {rem.frequency}
                       </div>
                       <div>
-                        <span className="font-semibold">Start:</span> {rem.startDate?.slice(0, 10)}
+                        <span className="font-semibold">Start:</span>{" "}
+                        {rem.startDate?.slice(0, 10)}
                       </div>
                       <div>
-                        <span className="font-semibold">End:</span> {rem.endDate?.slice(0, 10) || "-"}
+                        <span className="font-semibold">End:</span>{" "}
+                        {rem.endDate?.slice(0, 10) || "-"}
                       </div>
                       <div>
-                        <span className="font-semibold">Active:</span> {rem.isActive ? "Yes" : "No"}
+                        <span className="font-semibold">Active:</span>{" "}
+                        {rem.isActive ? "Yes" : "No"}
                       </div>
                       <div>
-                        <span className="font-semibold">Paused:</span> {rem.isPaused ? "Yes" : "No"}
+                        <span className="font-semibold">Paused:</span>{" "}
+                        {rem.isPaused ? "Yes" : "No"}
                       </div>
                     </div>
                     {rem.notes && (
                       <div className="text-xs text-slate-500 mt-2">
-                        <span className="font-semibold">Notes:</span> {rem.notes}
+                        <span className="font-semibold">Notes:</span>{" "}
+                        {rem.notes}
                       </div>
                     )}
                     {rem.timeSlot && rem.timeSlot.length > 0 && (
@@ -575,7 +597,10 @@ export default function MedAlertsPage() {
                 placeholder="Describe this category"
                 value={categoryForm.description}
                 onChange={(e) =>
-                  setCategoryForm((f) => ({ ...f, description: e.target.value }))
+                  setCategoryForm((f) => ({
+                    ...f,
+                    description: e.target.value,
+                  }))
                 }
                 rows={2}
               />
@@ -594,12 +619,14 @@ export default function MedAlertsPage() {
           </div>
           <DialogFooter>
             <Button
-              onClick={editingCategory ? handleUpdateCategory : handleCreateCategory}
+              onClick={
+                editingCategory ? handleUpdateCategory : handleCreateCategory
+              }
             >
               {editingCategory ? "Update" : "Create"}
             </Button>
             <DialogClose asChild>
-              <Button variant="ghost">Cancel</Button>
+              <Button variant="outline">Cancel</Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>
@@ -616,7 +643,9 @@ export default function MedAlertsPage() {
             <div className="flex flex-col gap-2">
               <Label>Category</Label>
               <select
-                className={`w-full border rounded px-2 py-1 ${editingReminder ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                className={`w-full border rounded px-2 py-1 ${
+                  editingReminder ? "bg-gray-100 cursor-not-allowed" : ""
+                }`}
                 value={reminderForm.categoryId}
                 onChange={
                   !editingReminder
@@ -644,7 +673,10 @@ export default function MedAlertsPage() {
                 placeholder="e.g. Aspirin"
                 value={reminderForm.medicineName}
                 onChange={(e) =>
-                  setReminderForm((f: any) => ({ ...f, medicineName: e.target.value }))
+                  setReminderForm((f: any) => ({
+                    ...f,
+                    medicineName: e.target.value,
+                  }))
                 }
                 required
               />
@@ -655,7 +687,10 @@ export default function MedAlertsPage() {
                 placeholder="e.g. 100mg"
                 value={reminderForm.dosage}
                 onChange={(e) =>
-                  setReminderForm((f: any) => ({ ...f, dosage: e.target.value }))
+                  setReminderForm((f: any) => ({
+                    ...f,
+                    dosage: e.target.value,
+                  }))
                 }
                 required
               />
@@ -666,7 +701,10 @@ export default function MedAlertsPage() {
                 placeholder="e.g. Once daily"
                 value={reminderForm.frequency}
                 onChange={(e) =>
-                  setReminderForm((f: any) => ({ ...f, frequency: e.target.value }))
+                  setReminderForm((f: any) => ({
+                    ...f,
+                    frequency: e.target.value,
+                  }))
                 }
                 required
               />
@@ -695,7 +733,10 @@ export default function MedAlertsPage() {
                 type="date"
                 value={reminderForm.startDate}
                 onChange={(e) =>
-                  setReminderForm((f: any) => ({ ...f, startDate: e.target.value }))
+                  setReminderForm((f: any) => ({
+                    ...f,
+                    startDate: e.target.value,
+                  }))
                 }
                 required
               />
@@ -706,7 +747,10 @@ export default function MedAlertsPage() {
                 type="date"
                 value={reminderForm.endDate}
                 onChange={(e) =>
-                  setReminderForm((f: any) => ({ ...f, endDate: e.target.value }))
+                  setReminderForm((f: any) => ({
+                    ...f,
+                    endDate: e.target.value,
+                  }))
                 }
               />
             </div>
@@ -723,59 +767,104 @@ export default function MedAlertsPage() {
             </div>
             <div className="flex flex-col gap-2 col-span-1 md:col-span-3">
               <Label>
-                Time Slots <span className="text-xs text-muted-foreground">(comma separated, e.g. 09:00 AM, 08:00 PM)</span>
+                Time Slots
+                <span className="text-xs text-muted-foreground ml-2">
+                  (Add one or more times)
+                </span>
               </Label>
-              <Input
-                placeholder="09:00 AM, 08:00 PM"
-                value={reminderForm.timeSlot
-                  .map((slot: any) =>
-                    typeof slot === "object"
-                      ? `${slot.hour}:${slot.minute} ${slot.period}`
-                      : slot
-                  )
-                  .join(", ")}
-                onChange={(e) => {
-                  const slots = e.target.value.split(",").map((s) => {
-                    const match = s.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-                    if (match) {
-                      return {
-                        hour: match[1].padStart(2, "0"),
-                        minute: match[2],
-                        period: match[3].toUpperCase(),
-                      };
-                    }
-                    return s.trim();
-                  });
-                  setReminderForm((f: any) => ({ ...f, timeSlot: slots.filter(Boolean) }));
-                }}
-              />
+              <div className="flex flex-row gap-2">
+                {reminderForm.timeSlot.map((slot: any, idx: number) => (
+                  <div key={idx} className="flex items-center gap-1 mb-1">
+                    <Input
+                      type="time"
+                      value={
+                        slot.hour && slot.minute
+                          ? `${slot.hour}:${slot.minute}`
+                          : ""
+                      }
+                      onChange={(e) => {
+                        const [hour, minute] = e.target.value.split(":");
+                        setReminderForm((f: any) => {
+                          const updated = [...f.timeSlot];
+                          updated[idx] = {
+                            hour: hour.padStart(2, "0"),
+                            minute: minute.padStart(2, "0"),
+                            period: Number(hour) >= 12 ? "PM" : "AM",
+                          };
+                          return { ...f, timeSlot: updated };
+                        });
+                      }}
+                      className="w-32"
+                    />
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => {
+                        setReminderForm((f: any) => ({
+                          ...f,
+                          timeSlot: f.timeSlot.filter(
+                            (_: any, i: number) => i !== idx
+                          ),
+                        }));
+                      }}
+                      title="Remove"
+                    >
+                      ×
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setReminderForm((f: any) => ({
+                      ...f,
+                      timeSlot: [
+                        ...f.timeSlot,
+                        { hour: "09", minute: "00", period: "AM" },
+                      ],
+                    }));
+                  }}
+                  className="w-fit"
+                >
+                  + Add Time Slot
+                </Button>
+              </div>
             </div>
           </div>
           <DrawerFooter>
             <div className="flex w-full gap-4">
               <Button
                 className="flex-1"
-                onClick={editingReminder ? handleUpdateReminder : handleCreateReminder}
+                onClick={
+                  editingReminder ? handleUpdateReminder : handleCreateReminder
+                }
               >
                 {editingReminder ? "Update" : "Create"}
               </Button>
               <DrawerClose asChild>
-                <Button className="flex-1" variant="ghost">Cancel</Button>
+                <Button className="flex-1" variant="outline">
+                  Cancel
+                </Button>
               </DrawerClose>
             </div>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
 
-      <Dialog open={!!deleteModal.type} onOpenChange={() => setDeleteModal({ type: null, id: null })}>
+      <Dialog
+        open={!!deleteModal.type}
+        onOpenChange={() => setDeleteModal({ type: null, id: null })}
+      >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>
-              Confirm Deletion
-            </DialogTitle>
+            <DialogTitle>Confirm Deletion</DialogTitle>
           </DialogHeader>
           <div>
-            Are you sure you want to delete this {deleteModal.type === "category" ? "category" : "reminder"}?
+            Are you sure you want to delete this{" "}
+            {deleteModal.type === "category" ? "category" : "reminder"}?
             <div className="text-xs text-muted-foreground mt-2">
               This action cannot be undone.
             </div>
@@ -785,7 +874,7 @@ export default function MedAlertsPage() {
               Delete
             </Button>
             <DialogClose asChild>
-              <Button variant="ghost">Cancel</Button>
+              <Button variant="outline">Cancel</Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>
