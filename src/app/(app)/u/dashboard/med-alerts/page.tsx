@@ -53,6 +53,43 @@ type Reminder = {
   category: Category;
 };
 
+const cardVariants = {
+  initial: {
+    opacity: 0,
+    scale: 0.7,
+    y: 80,
+    rotate: -8,
+    filter: "blur(2px)",
+  },
+  animate: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    rotate: 0,
+    filter: "blur(0px)",
+    transition: {
+      type: "spring",
+      stiffness: 500,
+      damping: 30,
+      mass: 1.2,
+      velocity: 2,
+      bounce: 0.4,
+      duration: 0.7,
+    },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.6,
+    y: 60,
+    rotate: 8,
+    filter: "blur(2px)",
+    transition: {
+      duration: 0.35,
+      ease: "easeIn",
+    },
+  },
+};
+
 export default function MedAlertsPage() {
   const { isLoggedIn } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -60,7 +97,6 @@ export default function MedAlertsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  // Modal states
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [showReminderModal, setShowReminderModal] = useState(false);
   const [categoryForm, setCategoryForm] = useState({
@@ -243,7 +279,6 @@ export default function MedAlertsPage() {
     }
   };
 
-  // Filter reminders based on search
   const filteredReminders = reminders.filter((rem) =>
     rem.medicineName.toLowerCase().includes(search.toLowerCase()) ||
     rem.dosage.toLowerCase().includes(search.toLowerCase()) ||
@@ -259,7 +294,13 @@ export default function MedAlertsPage() {
     );
 
   return (
-    <section className="min-h-screen w-full pl-20 pr-5 pt-12 space-y-10">
+    <motion.section
+      className="min-h-screen w-full pl-20 pr-5 pt-12 space-y-10"
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 40 }}
+      transition={{ duration: 0.6, ease: "anticipate" }}
+    >
       <div>
         <div className="flex items-center gap-4 mb-4">
           <Button
@@ -346,7 +387,7 @@ export default function MedAlertsPage() {
                 placeholder="Search reminders..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-full border-2 border-blue-400 focus:border-blue-600 transition-all shadow focus:shadow-lg bg-white"
+                className="w-full pl-10 pr-4 py-2 rounded-full border-2 border-blue-400 transition-all bg-white"
                 style={{ fontSize: "1rem" }}
               />
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none">
@@ -371,10 +412,11 @@ export default function MedAlertsPage() {
                 <motion.div
                   key={rem.id}
                   layout
-                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, y: 30 }}
-                  transition={{ duration: 0.3 }}
+                  variants={cardVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ layout: { duration: 0.4, type: "spring" } }}
                 >
                   <Card
                     className={clsx(
@@ -748,6 +790,6 @@ export default function MedAlertsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </section>
+    </motion.section>
   );
 }
