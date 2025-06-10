@@ -25,6 +25,22 @@ const SUGGESTIONS = [
 		title: "Mental Health",
 		desc: "Talk about stress, anxiety, or sleep issues.",
 	},
+	{
+		title: "General Queries",
+		desc: "Ask any health-related questions you have.",
+	},
+	{
+		title: "Upload Health Report",
+		desc: "Share your health report for personalized assistance.",
+	},
+	{
+		title: "Emergency Advice",
+		desc: "Get guidance on what to do in case of an emergency.",
+	},
+	{
+		title: "Health Tips",
+		desc: "Ask for tips on maintaining a healthy lifestyle.",
+	}
 ];
 
 export default function SwasthaAIChatbotPage() {
@@ -42,7 +58,6 @@ export default function SwasthaAIChatbotPage() {
 		setLoading(true);
 		setError(null);
 
-		// Add user message
 		const userMsg = { id: Date.now(), sender: "user", text: input };
 		setMessages((prev) => [...prev, userMsg]);
 		setInput("");
@@ -96,11 +111,10 @@ export default function SwasthaAIChatbotPage() {
 	if (!isLoggedIn) return <BackToLogin />;
 
 	return (
-		<section className="min-h-screen w-full pl-20 pr-5 pt-10 flex flex-col items-center">
-			<div className="w-full max-w-3xl flex-1 flex flex-col justify-center items-center mx-auto">
-				{/* Initial Centered Content */}
+		<section className="min-h-screen w-full pl-2 pr-2 pt-2 pb-12 flex flex-col items-center">
+			<div className="w-full max-w-7xl flex-1 flex flex-col justify-center items-center mx-auto">
 				{messages.length === 0 && !loading && (
-					<div className="flex flex-col items-center mt-20 mb-10 w-full">
+					<div className="flex flex-col items-center mt-4 mb-6 w-full">
 						<h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
 							<span className="text-slate-800">Swastha</span>
 							<span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent ml-2">
@@ -117,7 +131,7 @@ export default function SwasthaAIChatbotPage() {
 							{SUGGESTIONS.map((s, i) => (
 								<div
 									key={i}
-									className="rounded-xl border border-slate-200 shadow-sm p-5 w-64 bg-white hover:shadow-md transition group"
+									className="rounded-xl border border-slate-200 shadow-sm p-5 w-64 bg-white hover:shadow-md transition group cursor-pointer"
 									style={{ minHeight: 120 }}
 									onClick={() => setInput(s.title)}
 									role="button"
@@ -158,10 +172,10 @@ export default function SwasthaAIChatbotPage() {
 
 				<div
 					className={clsx(
-						"flex-1 w-full max-w-2xl mx-auto mb-4 overflow-y-auto transition-all",
+						"flex-1 w-full max-w-6xl mx-auto mb-2 overflow-y-auto transition-all",
 						messages.length === 0 ? "hidden" : "block"
 					)}
-					style={{ minHeight: 200, maxHeight: 400 }}
+					style={{ minHeight: 350, maxHeight: 700 }}
 				>
 					{messages.map((msg) => (
 						<div
@@ -207,7 +221,7 @@ export default function SwasthaAIChatbotPage() {
 				</div>
 			</div>
 
-			<div className="w-full max-w-2xl mx-auto mb-8">
+			<div className="w-full max-w-3xl mx-auto mb-6">
 				{selectedFile && (
 					<div className="flex items-center justify-between bg-slate-100 rounded-lg px-3 py-2 mb-2">
 						<span className="text-sm text-slate-700 truncate max-w-[80%]">
@@ -224,7 +238,7 @@ export default function SwasthaAIChatbotPage() {
 						</Button>
 					</div>
 				)}
-				<div className="rounded-2xl border border-slate-200 shadow-md flex items-center px-4 py-2 gap-2 bg-white">
+				<div className="rounded-2xl border border-slate-200 shadow-md flex items-center px-6 py-3 gap-3 bg-white">
 					<Button
 						variant="ghost"
 						size="icon"
@@ -244,7 +258,7 @@ export default function SwasthaAIChatbotPage() {
 					/>
 					<input
 						type="text"
-						className="flex-1 outline-none border-none bg-transparent px-2 py-1 text-base"
+						className="flex-1 outline-none border-none bg-transparent px-4 py-2 text-base max-w-[600px]"
 						placeholder="Tell us about your health"
 						value={input}
 						onChange={(e) => setInput(e.target.value)}
