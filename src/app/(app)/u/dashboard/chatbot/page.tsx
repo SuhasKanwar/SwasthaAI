@@ -15,34 +15,42 @@ const SUGGESTIONS = [
 	{
 		title: "Medication Guidance",
 		desc: "Ask about your prescriptions, dosages, or side effects.",
+		question: "What should I know about my medication?",
 	},
 	{
 		title: "Symptom Checker",
 		desc: "Describe your symptoms and get AI-powered insights.",
+		question: "What could be causing my symptoms?",
 	},
 	{
 		title: "Diet & Lifestyle",
 		desc: "Get advice on healthy eating and daily routines.",
+		question: "How can I improve my diet and lifestyle?",
 	},
 	{
 		title: "Mental Health",
 		desc: "Talk about stress, anxiety, or sleep issues.",
+		question: "How can I manage my mental health better?",
 	},
 	{
 		title: "General Queries",
 		desc: "Ask any health-related questions you have.",
+		question: "What do I need to know about my health?",
 	},
 	{
 		title: "Upload Health Report",
 		desc: "Share your health report for personalized assistance.",
+		question: "Can you analyze my health report?",
 	},
 	{
 		title: "Emergency Advice",
 		desc: "Get guidance on what to do in case of an emergency.",
+		question: "What should I do in a health emergency?",
 	},
 	{
 		title: "Health Tips",
 		desc: "Ask for tips on maintaining a healthy lifestyle.",
+		question: "What are some tips for staying healthy?",
 	}
 ];
 
@@ -180,7 +188,7 @@ export default function SwasthaAIChatbotPage() {
 									key={i}
 									className="rounded-xl border border-slate-200 shadow-sm p-5 w-64 bg-white hover:shadow-md transition group cursor-pointer"
 									style={{ minHeight: 120 }}
-									onClick={() => setInput(s.title)}
+									onClick={() => setInput(s.question)}
 									role="button"
 									tabIndex={0}
 								>
