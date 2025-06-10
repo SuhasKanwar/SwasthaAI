@@ -117,8 +117,8 @@ export default function SwasthaAIChatbotPage() {
 					<div className="flex flex-col items-center mt-4 mb-6 w-full">
 						<h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
 							<span className="text-slate-800">Swastha</span>
-							<span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent ml-2">
-								AI Chatbot
+							<span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
+								AI Assessment
 							</span>
 							<span className="ml-2">
 								<Bot className="inline w-10 h-10 text-blue-400 align-middle" />
