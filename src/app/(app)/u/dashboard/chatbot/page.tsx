@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import BackToLogin from "@/components/BackToLogin";
 import { useAuth } from "@/providers/AuthProvider";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,8 @@ import { Loader2, Mic, Send, UploadCloud, User, Bot, X } from "lucide-react";
 import clsx from "clsx";
 import { toast } from "sonner";
 import axios from "axios";
+import ReactMarkdown from "react-markdown";
+import { motion, AnimatePresence } from "framer-motion";
 
 const SUGGESTIONS = [
 	{
@@ -53,6 +55,13 @@ export default function SwasthaAIChatbotPage() {
 	const [voiceActive, setVoiceActive] = useState(false);
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const chatContainerRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (chatContainerRef.current) {
+			chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+		}
+	}, [messages, loading]);
 
 	const handleSend = async () => {
 		if (!input.trim()) return;
@@ -144,6 +153,12 @@ export default function SwasthaAIChatbotPage() {
 
 	return (
 		<section className="min-h-screen w-full pl-2 pr-2 pt-2 pb-12 flex flex-col items-center">
+			<style>
+				{`
+				.hide-scrollbar::-webkit-scrollbar { display: none; }
+				.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+				`}
+			</style>
 			<div className="w-full max-w-7xl flex-1 flex flex-col justify-center items-center mx-auto">
 				{messages.length === 0 && !loading && (
 					<div className="flex flex-col items-center mt-4 mb-6 w-full">
@@ -203,42 +218,55 @@ export default function SwasthaAIChatbotPage() {
 				)}
 
 				<div
+					ref={chatContainerRef}
 					className={clsx(
-						"flex-1 w-full max-w-6xl mx-auto mb-2 overflow-y-auto transition-all",
+						"flex-1 w-full max-w-6xl mx-auto mb-2 overflow-y-auto transition-all hide-scrollbar",
 						messages.length === 0 ? "hidden" : "block"
 					)}
 					style={{ minHeight: 350, maxHeight: 700 }}
 				>
-					{messages.map((msg) => (
-						<div
-							key={msg.id}
-							className={clsx(
-								"flex items-start gap-3 my-4",
-								msg.sender === "user" ? "justify-end" : "justify-start"
-							)}
-						>
-							{msg.sender === "bot" && (
-								<div className="rounded-full bg-blue-100 p-2">
-									<Bot className="w-5 h-5 text-blue-500" />
-								</div>
-							)}
-							<div
+					<AnimatePresence initial={false}>
+						{messages.map((msg) => (
+							<motion.div
+								key={msg.id}
+								initial={{ opacity: 0, y: 20 }}
+								animate={{ opacity: 1, y: 0 }}
+								exit={{ opacity: 0, y: -20 }}
+								transition={{ duration: 0.25, ease: "easeOut" }}
 								className={clsx(
-									"rounded-xl px-4 py-2 max-w-[70%] whitespace-pre-line",
-									msg.sender === "user"
-										? "bg-gradient-to-r from-blue-500 to-teal-500 text-white ml-auto"
-										: "bg-slate-100 text-slate-800"
+									"flex items-start gap-3 my-4",
+									msg.sender === "user" ? "justify-end" : "justify-start"
 								)}
 							>
-								{msg.text}
-							</div>
-							{msg.sender === "user" && (
-								<div className="rounded-full bg-slate-200 p-2">
-									<User className="w-5 h-5 text-slate-500" />
+								{msg.sender === "bot" && (
+									<div className="rounded-full bg-blue-100 p-2">
+										<Bot className="w-5 h-5 text-blue-500" />
+									</div>
+								)}
+								<div
+									className={clsx(
+										"rounded-xl px-4 py-2 max-w-[70%] whitespace-pre-line",
+										msg.sender === "user"
+											? "bg-gradient-to-r from-blue-500 to-teal-500 text-white ml-auto"
+											: "bg-slate-100 text-slate-800"
+									)}
+								>
+									{msg.sender === "bot" ? (
+										<ReactMarkdown>
+											{msg.text}
+										</ReactMarkdown>
+									) : (
+										msg.text
+									)}
 								</div>
-							)}
-						</div>
-					))}
+								{msg.sender === "user" && (
+									<div className="rounded-full bg-slate-200 p-2">
+										<User className="w-5 h-5 text-slate-500" />
+									</div>
+								)}
+							</motion.div>
+						))}
+					</AnimatePresence>
 					{loading && (
 						<div className="flex items-center gap-2 my-4">
 							<Loader2 className="w-5 h-5 animate-spin text-blue-400" />
