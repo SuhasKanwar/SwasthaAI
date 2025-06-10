@@ -53,42 +53,11 @@ type Reminder = {
   category: Category;
 };
 
-const cardVariants = {
-  initial: {
-    opacity: 0,
-    scale: 0.7,
-    y: 80,
-    rotate: -8,
-    filter: "blur(2px)",
-  },
-  animate: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    rotate: 0,
-    filter: "blur(0px)",
-    transition: {
-      type: "spring",
-      stiffness: 500,
-      damping: 30,
-      mass: 1.2,
-      velocity: 2,
-      bounce: 0.4,
-      duration: 0.7,
-    },
-  },
-  exit: {
-    opacity: 0,
-    scale: 0.6,
-    y: 60,
-    rotate: 8,
-    filter: "blur(2px)",
-    transition: {
-      duration: 0.35,
-      ease: "easeIn",
-    },
-  },
-};
+export const cardVariants = {
+  initial: { opacity: 0, y: 20},
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 },
+}
 
 export default function MedAlertsPage() {
   const { isLoggedIn } = useAuth();
