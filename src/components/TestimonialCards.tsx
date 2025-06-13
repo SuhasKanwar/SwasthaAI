@@ -2,7 +2,7 @@ import { CardStack } from "@/components/ui/card-stack";;
 import { cn } from "@/lib/utils";
 export default function TestimonialCards() {
   return (
-    <div className="h-[20rem] flex flex-col md:flex-row gap-25 items-center justify-center w-full testimonials">
+    <div className="h-[20rem] flex flex-col md:flex-row gap-25 items-center justify-center w-full" id="testimonials">
       <CardStack items={CARDS_1} />
       <CardStack items={CARDS_2} />
       <CardStack items={CARDS_3} />

@@ -103,14 +103,14 @@ const Navbar = () => {
       </NavBody>
       <MobileNav>
         <MobileNavHeader>
-          <a className="flex items-center space-x-2 cursor-pointer" href="/">
+          <Link className="flex items-center space-x-2 cursor-pointer" href="/">
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-teal-500 rounded-xl flex items-center justify-center shadow-md">
               <Heart className="w-6 h-6 text-white" />
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
               SwasthaAI
             </span>
-          </a>
+          </Link>
           <MobileNavToggle
             isOpen={mobileOpen}
             onClick={() => setMobileOpen((v) => !v)}
@@ -118,14 +118,14 @@ const Navbar = () => {
         </MobileNavHeader>
         <MobileNavMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)}>
           {NAV_ITEMS.map((item) => (
-            <a
+            <Link
               key={item.name}
               href={item.link}
               className="block px-4 py-2 text-lg text-neutral-700 hover:text-blue-600"
               onClick={() => setMobileOpen(false)}
             >
               {item.name}
-            </a>
+            </Link>
           ))}
           <div className="flex flex-col gap-2 mt-4 w-full">
             {isLoggedIn ? (

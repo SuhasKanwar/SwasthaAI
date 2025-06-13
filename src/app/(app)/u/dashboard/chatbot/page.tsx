@@ -8,8 +8,11 @@ import { Loader2, Mic, Send, UploadCloud, User, Bot, X } from "lucide-react";
 import clsx from "clsx";
 import { toast } from "sonner";
 import axios from "axios";
-import ReactMarkdown from "react-markdown";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { LinkPreview } from "@/components/ui/link-preview";
 
 const SUGGESTIONS = [
 	{
@@ -55,7 +58,7 @@ const SUGGESTIONS = [
 ];
 
 export default function SwasthaAIChatbotPage() {
-	const { isLoggedIn } = useAuth();
+	const { isLoggedIn, token } = useAuth();
 	const [messages, setMessages] = useState<any[]>([]);
 	const [input, setInput] = useState("");
 	const [loading, setLoading] = useState(false);
@@ -93,13 +96,20 @@ export default function SwasthaAIChatbotPage() {
 					{
 						headers: {
 							"Content-Type": "multipart/form-data",
+							Authorization: `Bearer ${token}`,
 						},
 					}
 				);
 			} else {
 				response = await axios.post(
 					`${process.env.NEXT_PUBLIC_MICROSERVICE_BASE_URL}/chatbot/query`,
-					{ query: input }
+					{ query: input },
+					{
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${token}`,
+						},
+					}
 				);
 			}
 
@@ -107,6 +117,7 @@ export default function SwasthaAIChatbotPage() {
 				id: Date.now() + 1,
 				sender: "bot",
 				text: response.data?.answer || "Sorry, I couldn't process your request.",
+				citations: response.data?.citations || [],
 			};
 			setMessages((prev) => [...prev, botMsg]);
 		} catch (err: any) {
@@ -256,15 +267,44 @@ export default function SwasthaAIChatbotPage() {
 										"rounded-xl px-4 py-2 max-w-[70%] whitespace-pre-line",
 										msg.sender === "user"
 											? "bg-gradient-to-r from-blue-500 to-teal-500 text-white ml-auto"
-											: "bg-slate-100 text-slate-800"
+											: "bg-teal-100 text-slate-800"
 									)}
 								>
 									{msg.sender === "bot" ? (
-										<ReactMarkdown>
+										<ReactMarkdown
+											remarkPlugins={[remarkGfm]}
+											components={{
+												table: ({node, ...props}) => (
+													<table className="min-w-full border border-slate-300 my-2" {...props} />
+												),
+												th: ({node, ...props}) => (
+													<th className="border px-2 py-1 bg-slate-200" {...props} />
+												),
+												td: ({node, ...props}) => (
+													<td className="border px-2 py-1" {...props} />
+												),
+												strong: ({node, ...props}) => (
+													<strong className="font-semibold" {...props} />
+												),
+											}}
+										>
 											{msg.text}
 										</ReactMarkdown>
 									) : (
 										msg.text
+									)}
+									{msg.sender === "bot" && Array.isArray(msg.citations) && msg.citations.length > 0 && (
+										<div className="flex flex-wrap gap-2 mt-3">
+											{msg.citations.map((citation: any, idx: number) => (
+												<LinkPreview
+													key={idx}
+													url={citation}
+													className="rounded-full bg-blue-300 text-blue-700 px-3 py-1 text-xs font-medium hover:bg-blue-400 transition border border-blue-500"
+												>
+													{`Source ${idx + 1}`}
+												</LinkPreview>
+											))}
+										</div>
 									)}
 								</div>
 								{msg.sender === "user" && (

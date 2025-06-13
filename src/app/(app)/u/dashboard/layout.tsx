@@ -22,7 +22,7 @@ const sidebarLinks = [
     {
         name: "Book Appointment",
         icon: <MdAddCircle />,
-        link: "/u/dashboard/book-appointment",
+        link: "/u/dashboard/book-appointments",
     },
     {
         name: "Help",
