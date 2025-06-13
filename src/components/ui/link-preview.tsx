@@ -12,6 +12,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import Image from "next/image";
 
 type LinkPreviewProps = {
   children: React.ReactNode;
@@ -83,7 +84,7 @@ export const LinkPreview = ({
     <>
       {isMounted ? (
         <div className="hidden">
-          <img
+          <Image
             src={src}
             width={width}
             height={height}
@@ -148,7 +149,7 @@ export const LinkPreview = ({
                   target={traget}
                   rel={rel}
                 >
-                  <img
+                  <Image
                     src={isStatic ? imageSrc : src}
                     width={width}
                     height={height}
