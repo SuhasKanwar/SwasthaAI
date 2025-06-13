@@ -53,12 +53,6 @@ type Reminder = {
   category: Category;
 };
 
-export const cardVariants = {
-  initial: { opacity: 0, y: 20},
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -20 },
-}
-
 export default function MedAlertsPage() {
   const { isLoggedIn } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -91,6 +85,12 @@ export default function MedAlertsPage() {
     type: "category" | "reminder" | null;
     id: string | null;
   }>({ type: null, id: null });
+
+  const cardVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 },
+  };
 
   useEffect(() => {
     if (!isLoggedIn) return;
