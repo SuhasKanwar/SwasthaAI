@@ -3,7 +3,7 @@ import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 export default function FeaturesSection() {
   return (
-    <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-3 lg:gap-4 xl:max-h-[34rem] xl:grid-rows-2 max-w-[80vw] features">
+    <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-3 lg:gap-4 xl:max-h-[34rem] xl:grid-rows-2 max-w-[80vw]" id="features">
       <GridItem
         area="md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]"
         icon={<Stethoscope className="h-5 w-5 text-black" />}

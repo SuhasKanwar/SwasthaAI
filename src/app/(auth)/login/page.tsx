@@ -24,7 +24,7 @@ export default function LoginPage() {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { setToken } = useAuth();
+  const { setToken, setRole } = useAuth();
 
   // Step 1: Request OTP (login)
   const handleRequestOtp = async (e: React.FormEvent) => {
@@ -72,9 +72,15 @@ export default function LoginPage() {
       const data = res.data;
       if (data.token) {
         setToken(data.token);
+        setRole(data.user.role);
         toast.success("Login successful!");
         setStep("done");
-        router.push("/dashboard");
+        if(data.user.role === "patient") {
+          router.push("/u/dashboard");
+        }
+        else {
+          router.push("/d/dashboard");
+        }
       } else if (data.redirectTo === "setup-pin") {
         toast.info("Please set up your security PIN.");
       } else {

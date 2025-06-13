@@ -6,7 +6,7 @@ import WobbleFeatures from "@/components/WobbleFeatures";
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col items-center justify-center gap-20">
+    <div className="flex flex-col items-center justify-center gap-20 mb-25">
       <HeroSection />
       <FeaturesSection />
       <section className="w-full flex flex-col items-center justify-center mt-50">

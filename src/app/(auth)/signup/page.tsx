@@ -23,6 +23,8 @@ import {
 import Link from "next/link"
 import { AnimatedBackground } from "@/components/AnimatedBackground"
 import { toast } from "sonner"
+import { useAuth } from "@/providers/AuthProvider";
+import { useRouter } from "next/navigation";
 
 const USER_BACKEND_BASE_URL = process.env.NEXT_PUBLIC_USER_BACKEND_BASE_URL || "http://localhost:8050";
 
@@ -30,7 +32,7 @@ export default function SignUpPage() {
   const [step, setStep] = useState<"email" | "otp" | "pin" | "profile" | "done">("email");
   const [otp, setOtp] = useState("");
   const [pin, setPin] = useState("");
-  const [token, setToken] = useState("");
+  const [token, setTokenState] = useState("");
   const [isNewUser, setIsNewUser] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,8 +43,10 @@ export default function SignUpPage() {
     password: "",
     gender: "",
     dateOfBirth: "",
-    role: "patient",
+    role: "",
   });
+  const { setToken, setRole } = useAuth();
+  const router = useRouter();
 
   // Step 1: Request OTP
   const handleRequestOtp = async (e: React.FormEvent) => {
@@ -98,7 +102,9 @@ export default function SignUpPage() {
         isNewUser,
       });
       const data = res.data;
+      setTokenState(data.token);
       setToken(data.token);
+      setRole(data.role);
       toast.success("PIN set. Complete your profile.");
       setStep("profile");
     } catch (error: any) {
@@ -114,13 +120,14 @@ export default function SignUpPage() {
     if (!validateForm()) return;
     setIsLoading(true);
     try {
-      await axios.put(
+      const response = await axios.put(
         `${USER_BACKEND_BASE_URL}/api/physical-health/user/profile/basic-info`,
         {
           firstName: formData.firstName,
           lastName: formData.lastName,
           dateOfBirth: formData.dateOfBirth,
           gender: formData.gender,
+          role: formData.role,
         },
         {
           headers: {
@@ -131,6 +138,12 @@ export default function SignUpPage() {
       );
       toast.success("Account created successfully!");
       setStep("done");
+      if(response.data?.data?.role === "patient") {
+        router.push("/u/dashboard");
+      }
+      else {
+        router.push("/d/dashboard");
+      }
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to complete profile");
     } finally {
